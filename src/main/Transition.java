@@ -1,6 +1,5 @@
 package main;
 
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 
 public class Transition {
@@ -10,9 +9,9 @@ public class Transition {
     private String direction;
     private String nextState;
     private String key;
-    private String[] value = new String[3];
+    private String[] value = new String[3]; // [go to state, write symbol, move direction]
     // linked hash map keeps elements in insertion order
-    private LinkedHashMap<String, String[]> transitions = new LinkedHashMap<>(); // put in main and add to Main.lhm so it's accessible
+    private LinkedHashMap<String, String[]> transitions = new LinkedHashMap<>();
 
     /**
      * Creates a Transition and adds it to the LinkedHashMap.
@@ -29,48 +28,28 @@ public class Transition {
         direction = dir;
         nextState = next;
 
-        // TODO remove hardcoded numbers
+        // preparing to add to machine's hash map
         key = currentState + readSymbol;
         value[0] = nextState;
         value[1] = writeSymbol;
         value[2] = direction;
+
     }
 
+    // getters
 
     public String getKey() {
         return key;
     }
 
-    private void printArray(String[] value) {
-        for (String elem : value) {
-            System.out.print(elem);
-        }
-    }
-
-//    @Override
-//    public String toString() {
-//        String r = null;
-//        for (String val : transitions.get(key)) {
-//            r += val + " ";
-//        }
-//
-//        return r;
-//    }
 
     public String[] getValue() {
         return value;
     }
 
-    public String[] getTransitionFunction(String currentState, String currentSymbol) {
-        String key = currentState + currentSymbol; // could put this in transitionOn
-        return transitions.get(key);
-    }
-
-    public void transitionOn(String currentState, String currentSymbol) {
-        String[] t = getTransitionFunction(currentState, currentSymbol);
-//        Tape.write(t[0]); // static or instance? if static, need to pass in the TM for method?
-//        goToState(t[2]);
-//        Tape.move(t[1]);
-    }
+//    public String[] getTransitionFunction(String currentState, String currentSymbol) {
+//        String key = currentState + currentSymbol; // could put this in transitionOn
+//        return transitions.get(key);
+//    }
 
 }

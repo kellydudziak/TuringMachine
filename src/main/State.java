@@ -1,19 +1,26 @@
 package main;
 
 /**
- *
+ * State has a name and can be initial or final.
  */
 public class State {
     private final boolean isInitial;
     private final boolean isFinal;
     private final String stateName;
-    private State currentState;
 
+    /**
+     * Constructs a new State.
+     * @param initial whether this is an initial state
+     * @param finalState whether this is a final/accept state
+     * @param name name of the state
+     */
     public State(boolean initial, boolean finalState, String name) {
-        isInitial = initial; // use separate list of final and initial states to go through and set q[0].isInitial = true etc
+        isInitial = initial;
         isFinal = finalState;
         stateName = name;
     }
+
+    // getters
 
     public boolean getIsInitial() {
         return isInitial;
@@ -26,13 +33,5 @@ public class State {
     public String getStateName() {
         return stateName;
     }
-
-//    public void goToState(State nextState) {
-//        currentState = nextState;
-//    }
-//
-//    public State getCurrentState() {
-//        return currentState;
-//    }
 
 }

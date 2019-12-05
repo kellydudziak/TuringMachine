@@ -1,113 +1,112 @@
 package main;
 
-import java.util.EmptyStackException;
 import java.util.Stack;
 
 /**
- * Tape has an alphabet and any input symbols that exist
- * on it already.
+ * Tape includes symbols written on the tape and a
+ * blank symbol.
  */
 public class Tape {
-    public String[] alphabet;
     private Stack<String> rightStack; //could be char?
     private Stack<String> leftStack;
     private String currentSymbol;
     private String blankSymbol;
+    private String inputString;
 
-    // symbols on tapes, also need to be able to change
-    // symbols indefinitely; circular array? list
-
-    public Tape() {
-        alphabet = new String[0];
-    }
-
-    public Tape(String[] a) {
-        alphabet = a;
-    }
-
-    public Tape(String input, String blankSymbol, String[] alphabet) {
-        this.alphabet = alphabet;
+    /**
+     * Construct a tape with two stacks and a current cell.
+     * @param input
+     * @param blankSymbol
+     */
+    public Tape(String input, String blankSymbol) {
+        inputString = input;
         this.blankSymbol = blankSymbol;
-
-        char[] inputChar = input.toCharArray();
         rightStack = new Stack<String>();
         leftStack = new Stack<String>();
 
-        // push input to left stack, will be in reverse order
+        // divide input string into individual characters
+        // and put on the tape
+        char[] inputChar = input.toCharArray();
         for (char ch : inputChar) {
             leftStack.push(String.valueOf(ch));
         }
-
-        // push onto right stack so head is at the top of stack
-        // and string is in order
+        // reverse so string is in correct order and
+        // all input is to the right of the read/write head
         while (!leftStack.isEmpty()) {
             rightStack.push(leftStack.pop());
         }
-
+        // positions read/write head at first non-blank element
         currentSymbol = rightStack.pop();
     }
 
     /**
      * Print entire tape in order without changing it.
      */
-    // TODO format output
-    // TODO original print tape prints stack backwards, alternate moves are backwards
-    // plus adds an extra a on the last go round
     public void printTape() {
-        // print left stack backwards
+        // print left stack in order
         if (!leftStack.isEmpty()) {
             System.out.print(leftStack);
-//            for (String s : leftStack) {
-//                System.out.print(s + " ");
-//            }
         }
         // print current symbol
             System.out.print("  " + currentSymbol + "  ");
 
-        // print right stack in order
+        // print right stack in reverse order
         if (!rightStack.isEmpty()) {
             System.out.print(reverse(rightStack) + "\n");
         } else {
-            System.out.println("\n");
+            System.out.println("");
         }
     }
 
+    /**
+     * Create a copy of a stack and reverse the clone.
+     * @param stack the stack to reverse
+     * @return the reversed stack
+     */
     public static Stack<String> reverse(Stack<String> stack) {
-        Stack<String> copy = (Stack<String>) stack.clone(); // passes values not pointer??
+        Stack<String> copy = (Stack<String>) stack.clone();
         Stack<String> reversed = new Stack<>();
 
         while (!copy.isEmpty()) {
             reversed.push(copy.pop());
         }
-        //System.out.println("Original stack " + stack + " reversed stack " + reversed);
+
         return reversed;
     }
 
+    /**
+     * Moves read/write head and prints the new tape.
+     * @param direction the direction to move. Assumes input is only
+     *                  r for right or l for left.
+     */
     public void move(String direction) {
             if (direction.equalsIgnoreCase("r")) {
                 moveRight();
             } else {
                 moveLeft();
             }
-            // TODO handle case when direction is not r or l
         printTape();
-        // else halt
     }
 
+    // move read/write head to point at the symbol to the right
+    // of the current symbol
     private void moveRight() {
-        if (!currentSymbol.equalsIgnoreCase(blankSymbol)) { // don't push blanks to the stack?
+        if (!currentSymbol.equalsIgnoreCase(blankSymbol)) { // don't push blanks to the stack
             leftStack.push(currentSymbol);
         }
 
-            if (!rightStack.isEmpty()) {
-                currentSymbol = rightStack.pop();
-            } else {
-                currentSymbol = blankSymbol;
-            }
+        // as long as the right stack has elements, the top becomes
+        // the new current symbol. If the stack is empty, the new current
+        // symbol is the blank.
+        if (!rightStack.isEmpty()) {
+            currentSymbol = rightStack.pop();
+        } else {
+            currentSymbol = blankSymbol;
+        }
     }
 
     private void moveLeft() {
-        if (!currentSymbol.equalsIgnoreCase(blankSymbol)) { // don't push blanks to the stack
+        if (!currentSymbol.equalsIgnoreCase(blankSymbol)) {
             rightStack.push(currentSymbol);
         }
 
@@ -118,23 +117,32 @@ public class Tape {
         }
     }
 
+    /**
+     * Gets the symbol currently being read by head.
+     * @return the current symbol
+     */
     public String read() {
         return currentSymbol;
     }
 
-    public String stackPeek(Stack<String> stack) {
-        try {
-            stack.peek();
-        } catch (EmptyStackException e) {
-            System.err.println(e);
-            stack.push(blankSymbol);
-        }
-        return stack.peek();
-    }
-
+    /**
+     * Overwrites the current symbol.
+     * @param symbol the new symbol to put on tape
+     */
     public void write(String symbol) {
         currentSymbol = symbol;
     }
+
+    /**
+     * Changes to tape symbols to given string.
+     * @param string the string to replace the current tape
+     * @return the new tape
+     */
+    public Tape resetTape(String string) {
+        return new Tape(string, blankSymbol);
+    }
+
+    // getters
 
     public String getBlankSymbol() {
         return blankSymbol;
@@ -148,7 +156,7 @@ public class Tape {
         return leftStack;
     }
 
-    public Tape resetTape(String string) {
-        return new Tape(string, blankSymbol, alphabet);
+    public String getInputString() {
+        return inputString;
     }
 }
